@@ -39,7 +39,7 @@ def main():
     st.write("Bu uygulama, tweet'lerinizi pozitif, nötr veya negatif olarak sınıflandırır.")
 
     # Modeli hazırlamak için eğitim verisi yüklenir
-    dataframe = pd.read_csv("/Users/melihgunaydin/Desktop/Miuul DSML16/7-NLP/Graduate Project/SentimentyBot/tweets_labeled.csv")
+    dataframe = pd.read_csv("tweets_labeled.csv")
     tf_idfVectorizer = TfidfVectorizer()
     X, y = data_preparation(dataframe, tf_idfVectorizer)
     log_model, accuracy, f1 = logistic_regression(X, y)
