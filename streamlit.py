@@ -10,15 +10,21 @@ import joblib  # Modeli kaydetmek ve yüklemek için
 # Veri hazırlama fonksiyonu
 def data_preparation(dataframe, tf_idfVectorizer):
     dataframe['tweet'] = dataframe['tweet'].str.lower()
-    dataframe["label"].replace(1, value="pozitif", inplace=True)
-    dataframe["label"].replace(-1, value="negatif", inplace=True)
-    dataframe["label"].replace(0, value="nötr", inplace=True)
+    
+    # Etiketleri değiştirme işlemi
+    dataframe["label"] = dataframe["label"].replace(1, value="pozitif")
+    dataframe["label"] = dataframe["label"].replace(-1, value="negatif")
+    dataframe["label"] = dataframe["label"].replace(0, value="nötr")
+    
     label_encoder = LabelEncoder()
     dataframe["label"] = label_encoder.fit_transform(dataframe["label"])
     dataframe.dropna(axis=0, inplace=True)
+    
     X = tf_idfVectorizer.fit_transform(dataframe["tweet"])
     y = dataframe["label"]
+    
     return X, y, label_encoder
+
 
 
 # Logistic Regression ve Model Kaydetme fonksiyonu
