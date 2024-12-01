@@ -8,9 +8,9 @@ from sklearn.model_selection import cross_val_score, cross_validate
 # Veri hazırlama fonksiyonu
 def data_preparation(dataframe, tf_idfVectorizer):
     dataframe['tweet'] = dataframe['tweet'].str.lower()
-    dataframe["label"].replace(1, value="pozitif", inplace=True)
-    dataframe["label"].replace(-1, value="negatif", inplace=True)
-    dataframe["label"].replace(0, value="nötr", inplace=True)
+    dataframe["label"] = dataframe["label"].replace(1, value="pozitif")
+    dataframe["label"] = dataframe["label"].replace(-1, value="negatif")
+    dataframe["label"] = dataframe["label"].replace(0, value="nötr")
     dataframe["label"] = LabelEncoder().fit_transform(dataframe["label"])
     dataframe.dropna(axis=0, inplace=True)
     X = tf_idfVectorizer.fit_transform(dataframe["tweet"])
