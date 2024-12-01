@@ -29,7 +29,7 @@ def data_preparation(dataframe, tf_idfVectorizer):
 
 # Logistic Regression ve Model Kaydetme fonksiyonu
 def train_and_save_model(X, y, tf_idfVectorizer):
-    log_model = LogisticRegression(max_iter=10000)
+    log_model = LogisticRegression()
     log_model.fit(X, y)
     joblib.dump(log_model, 'logistic_regression_model.pkl')  # Modeli kaydet
     joblib.dump(tf_idfVectorizer, 'tf_idfVectorizer.pkl')  # TF-IDF Vectorizer'ı kaydet
