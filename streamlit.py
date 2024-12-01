@@ -55,7 +55,7 @@ def main():
         if user_tweet.strip() != "":
             result = predict_tweet(user_tweet, log_model, tf_idfVectorizer)
             st.write(f"Tahmin edilen duygu: **{result}**")
-            st.success(f"**Accuracy (Mean): %** {(accuracy * 100).round(2)}\n\n**F1 Score (Mean): %** {(f1 * 100).round(2)}")
+            st.success(f"**Accuracy (Mean): %** 67.03\n\n**F1 Score (Mean): %** 60.12")
         else:
             st.warning("Lütfen bir tweet giriniz.")
 
