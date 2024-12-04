@@ -1,62 +1,37 @@
+
 import streamlit as st
+import joblib
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import LabelEncoder
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.model_selection import cross_val_score, cross_validate
 
-# Veri hazırlama fonksiyonu
-def data_preparation(dataframe, tf_idfVectorizer):
-    dataframe['tweet'] = dataframe['tweet'].str.lower()
-    dataframe["label"] = dataframe["label"].replace(1, value="pozitif")
-    dataframe["label"] = dataframe["label"].replace(-1, value="negatif")
-    dataframe["label"] = dataframe["label"].replace(0, value="nötr")
-    dataframe["label"] = LabelEncoder().fit_transform(dataframe["label"])
-    dataframe.dropna(axis=0, inplace=True)
-    X = tf_idfVectorizer.fit_transform(dataframe["tweet"])
-    y = dataframe["label"]
-    return X, y
-
-# Logistic Regression fonksiyonu
-def logistic_regression(X, y):
-    log_model = LogisticRegression().fit(X, y)
-    scoring = ['accuracy', 'f1_weighted']
-    cv_results = cross_validate(log_model, X, y, scoring=scoring, cv=10)
-    accuracy = cv_results['test_accuracy'].mean()
-    f1 = cv_results['test_f1_weighted'].mean()
-    return log_model, accuracy, f1
-
-# Tahmin fonksiyonu
-def predict_tweet(tweet, log_model, tf_idfVectorizer):
-    tweet_tfidf = tf_idfVectorizer.transform([tweet])
-    prediction = log_model.predict(tweet_tfidf)[0]
-    labels = {0: "negatif", 1: "nötr", 2: "pozitif"}
-    return labels[prediction]
-
-# Streamlit arayüzü
-def main():
-    st.title("Tweet Duygu Analizi Uygulaması")
-    st.write("Bu uygulama, tweet'lerinizi pozitif, nötr veya negatif olarak sınıflandırır.")
-
-    # Modeli hazırlamak için eğitim verisi yüklenir
-    dataframe = pd.read_csv("tweets_labeled.csv")
-    tf_idfVectorizer = TfidfVectorizer()
-    X, y = data_preparation(dataframe, tf_idfVectorizer)
-    log_model, accuracy, f1 = logistic_regression(X, y)
-    st.success("Model hazır!")
+# Modelleri yükleme
+log_model = joblib.load("log_model.pkl")
+tf_idf_vectorizer = joblib.load("tf_idf_vectorizer.pkl")
 
 
+st.title("Tweet Duygu Analizi Uygulaması")
+st.subheader("Bu uygulama, tweet'lerinizi pozitif, nötr veya negatif olarak sınıflandırır.")
 
-    # Kullanıcıdan tweet girişi
-    user_tweet = st.text_input("Bir tweet yazın:")
+# Kullanıcıdan tweet girişi
+user_tweet = st.text_input("Tweetinizi buraya yazın:")
 
-    if st.button("Tahmin Et"):
-        if user_tweet.strip() != "":
-            result = predict_tweet(user_tweet, log_model, tf_idfVectorizer)
-            st.write(f"Tahmin edilen duygu: **{result}**")
-            st.success(f"**Accuracy (Mean): %** {(accuracy * 100).round(2)}\n\n**F1 Score (Mean): %** {(f1 * 100).round(2)}")
-        else:
-            st.warning("Lütfen bir tweet giriniz.")
+if st.button("Tahmin Et"):
+    if user_tweet.strip() == "":
+        st.warning("Lütfen bir tweet girin.")
+    else:
+        # TF-IDF dönüşümü
+        tweet_tfidf = tf_idf_vectorizer.transform([user_tweet.lower()])
+        prediction = log_model.predict(tweet_tfidf)[0]
+        # Tahmin sonucu
+        if prediction == 0:
+            sentiment = "Negatif"
+        elif prediction == 1:
+            sentiment = "Nötr"
+        elif prediction == 2:
+            sentiment = "Pozitif"
 
-if __name__ == "__main__":
-    main()
+        st.success(f"Tahmin edilen duygu durumu: {sentiment}")
+        st.info(f"**Accuracy (Mean): %** 67.03\n\n**F1 Score (Mean): %** 60.12")
+
+
+def warning(param):
+    return None
